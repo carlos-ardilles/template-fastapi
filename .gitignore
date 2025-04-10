@@ -1,0 +1,66 @@
+# Arquivos de bytecode Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribuições Python
+dist/
+build/
+*.egg-info/
+*.egg
+
+# Ambiente virtual
+venv/
+env/
+ENV/
+.venv/
+.env/
+
+# Banco de dados SQLite
+*.db
+*.sqlite3
+*.sqlite
+
+# Logs
+*.log
+
+# Ambiente de desenvolvimento
+.coverage
+.coverage.*
+htmlcov/
+.pytest_cache/
+.tox/
+.nox/
+.hypothesis/
+
+# Documentação
+docs/_build/
+
+# Arquivos temporários
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Arquivos de configuração IDE
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Arquivos do Docker
+.docker/
+
+# Arquivos de ambiente
+.env
+.env.*
+
+# Arquivos de cache
+__pypackages__/
+.ruff_cache/
+
+# Arquivos de poetry
+.python-version
+
+# Outros
+.directory
