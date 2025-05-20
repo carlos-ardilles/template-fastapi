@@ -1,23 +1,20 @@
-FROM python:3.9-slim
+FROM python:3.13-slim
 
 # Define variáveis de ambiente
 ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1 \
-    POETRY_VERSION=1.5.1 \
-    POETRY_NO_INTERACTION=1 \
-    POETRY_VIRTUALENVS_CREATE=false
+    PYTHONUNBUFFERED=1
 
 # Define o diretório de trabalho
 WORKDIR /app
 
-# Instala o Poetry
-RUN pip install "poetry==$POETRY_VERSION"
+# Instala o uv
+RUN pip install uv
 
 # Copia os arquivos de configuração
-COPY pyproject.toml poetry.lock* /app/
+COPY pyproject.toml /app/
 
-# Instala as dependências
-RUN poetry install --no-dev
+# Instala as dependências usando uv
+RUN uv pip install --system  -r pyproject.toml
 
 # Copia o restante do código
 COPY . /app/
