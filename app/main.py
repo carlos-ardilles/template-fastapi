@@ -29,7 +29,7 @@ def create_application() -> FastAPI:
     )
 
     # Adiciona as rotas da API
-    application.include_router(api_router)
+    application.include_router(api_router, prefix=settings.API_V1_STR)
 
     @application.get("/")
     async def root():

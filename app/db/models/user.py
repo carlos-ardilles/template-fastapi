@@ -1,20 +1,44 @@
-"""Modelo de banco de dados para usuários."""
+"""Modelo de banco de dados e schema para usuários usando SQLModel."""
 
-from sqlalchemy import Boolean, Column, Integer, String
-from sqlalchemy.orm import relationship
+from typing import List, Optional, TYPE_CHECKING
+from sqlmodel import Field, Relationship, SQLModel
 
-from app.db import Base
+# Use TYPE_CHECKING para imports que são apenas para tipagem
+if TYPE_CHECKING:
+    from .item import Item
 
 
-class User(Base):
+class UserBase(SQLModel):
+    """Schema base para usuários."""
+    email: str = Field(unique=True, index=True)
+    name: str
+    is_active: bool = True
+
+
+class User(UserBase, table=True):
     """Modelo de usuário no banco de dados."""
     __tablename__ = "users"
 
-    id = Column(Integer, primary_key=True, index=True)
-    email = Column(String, unique=True, index=True)
-    name = Column(String)
-    hashed_password = Column(String)
-    is_active = Column(Boolean, default=True)
+    id: Optional[int] = Field(default=None, primary_key=True)
+    hashed_password: str
 
-    # Relacionamentos
-    items = relationship("Item", back_populates="owner")
+    # Relacionamentos - use string para forward reference
+    items: List["Item"] = Relationship(back_populates="owner")
+
+
+class UserCreate(UserBase):
+    """Schema para criação de usuários."""
+    password: str
+
+
+class UserUpdate(SQLModel):
+    """Schema para atualização de usuários."""
+    email: Optional[str] = None
+    name: Optional[str] = None
+    is_active: Optional[bool] = None
+    password: Optional[str] = None
+
+
+class UserRead(UserBase):
+    """Schema para leitura de usuários, incluindo o ID."""
+    id: int

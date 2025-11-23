@@ -22,6 +22,11 @@ class Settings(BaseSettings):
     DATABASE_URL: str = "sqlite:///./sql_app.db"
     DATABASE_TEST_URL: str = "sqlite:///./test.db"
 
+    # Configurações de autenticação
+    SECRET_KEY: str = "seu_secret_key_muito_seguro_aqui_mude_em_producao"
+    ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",

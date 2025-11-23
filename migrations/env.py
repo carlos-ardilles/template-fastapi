@@ -6,9 +6,12 @@ from sqlalchemy import pool
 from alembic import context
 
 from app.core.config import settings
-from app.db import Base
+from sqlmodel import SQLModel  # Adicionar importação do SQLModel
+
 # Importa todos os modelos para o Alembic detectá-los
-from app.db.models import user, item
+# É importante que os módulos dos modelos sejam importados aqui
+# para que o SQLModel.metadata contenha todas as tabelas.
+from app.db.models import user, item  # noqa
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -25,7 +28,7 @@ fileConfig(config.config_file_name)
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-target_metadata = Base.metadata
+target_metadata = SQLModel.metadata  # Usar SQLModel.metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:

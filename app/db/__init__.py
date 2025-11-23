@@ -1,19 +1,19 @@
 """Módulo para interação com banco de dados."""
 
-from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+# SQLModel usa Session do SQLAlchemy nos bastidores
+from sqlmodel import create_engine, Session
+# from sqlalchemy.ext.declarative import declarative_base # Não é mais necessário para SQLModel
+# from sqlalchemy.orm import sessionmaker # Session é importada de sqlmodel
 
 from app.core.config import settings
 
 # Cria o motor de conexão com o banco de dados
+# Para SQLModel, o connect_args pode ser útil para SQLite, como {"check_same_thread": False}
+# mas vamos manter como está por enquanto, assumindo que settings.DATABASE_URL está configurado adequadamente.
 engine = create_engine(settings.DATABASE_URL)
 
-# Classe para criar sessões do banco de dados
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-# Base para os modelos ORM
-Base = declarative_base()
+# Base para os modelos ORM - SQLModel.metadata é usado globalmente
+# Base = declarative_base() # Removido
 
 
 def get_db():
@@ -22,8 +22,10 @@ def get_db():
     Retorna um gerador que fornece uma sessão do banco de dados
     e garante que a sessão seja fechada após o uso.
     """
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+    # SessionLocal não é mais definida separadamente, usamos Session diretamente do SQLModel
+    # que é um wrapper em torno da sessionmaker do SQLAlchemy.
+    with Session(engine) as session:
+        try:
+            yield session
+        finally:
+            session.close()

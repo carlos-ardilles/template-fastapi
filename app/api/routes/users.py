@@ -2,17 +2,19 @@
 
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
+from sqlmodel import Session  # Importar Session de sqlmodel
 
 from app.db import get_db
-from app.schemas import user as user_schema
+# Ajustar importações para os modelos/schemas SQLModel
+from app.db.models.user import User, UserCreate, UserUpdate, UserRead
 from app.services import user_service
 
 router = APIRouter()
 
 
-@router.post("/", response_model=user_schema.User, status_code=status.HTTP_201_CREATED)
-def create_user(user: user_schema.UserCreate, db: Session = Depends(get_db)):
+@router.post("/", response_model=UserRead, status_code=status.HTTP_201_CREATED)
+# Renomeado para evitar conflito
+def create_user_route(user: UserCreate, db: Session = Depends(get_db)):
     """Cria um novo usuário."""
     db_user = user_service.get_user_by_email(db, email=user.email)
     if db_user:
@@ -23,8 +25,8 @@ def create_user(user: user_schema.UserCreate, db: Session = Depends(get_db)):
     return user_service.create_user(db=db, user=user)
 
 
-@router.get("/", response_model=List[user_schema.User])
-def read_users(
+@router.get("/", response_model=List[UserRead])
+def read_users_route(  # Renomeado para evitar conflito
     skip: int = 0,
     limit: int = 100,
     db: Session = Depends(get_db)
@@ -34,8 +36,9 @@ def read_users(
     return users
 
 
-@router.get("/{user_id}", response_model=user_schema.User)
-def read_user(user_id: int, db: Session = Depends(get_db)):
+@router.get("/{user_id}", response_model=UserRead)
+# Renomeado para evitar conflito
+def read_user_route(user_id: int, db: Session = Depends(get_db)):
     """Retorna um usuário específico pelo ID."""
     db_user = user_service.get_user(db, user_id=user_id)
     if db_user is None:
@@ -46,30 +49,31 @@ def read_user(user_id: int, db: Session = Depends(get_db)):
     return db_user
 
 
-@router.put("/{user_id}", response_model=user_schema.User)
-def update_user(
+@router.put("/{user_id}", response_model=UserRead)
+def update_user_route(  # Renomeado para evitar conflito
     user_id: int,
-    user: user_schema.UserUpdate,
+    user: UserUpdate,
     db: Session = Depends(get_db)
 ):
     """Atualiza um usuário."""
-    db_user = user_service.get_user(db, user_id=user_id)
-    if db_user is None:
+    updated_user = user_service.update_user(
+        db=db, user_id=user_id, user_update=user)
+    if updated_user is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Usuário não encontrado"
+            detail="Usuário não encontrado para atualização"
         )
-    return user_service.update_user(db=db, user_id=user_id, user=user)
+    return updated_user
 
 
 @router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_user(user_id: int, db: Session = Depends(get_db)):
+# Renomeado para evitar conflito
+def delete_user_route(user_id: int, db: Session = Depends(get_db)):
     """Remove um usuário."""
-    db_user = user_service.get_user(db, user_id=user_id)
-    if db_user is None:
+    deleted_user = user_service.delete_user(db=db, user_id=user_id)
+    if deleted_user is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Usuário não encontrado"
+            detail="Usuário não encontrado para remoção"
         )
-    user_service.delete_user(db=db, user_id=user_id)
-    return None
+    return None  # HTTP 204 No Content
