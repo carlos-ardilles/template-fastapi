@@ -1,7 +1,6 @@
 """Testes para as rotas de items."""
 
 import uuid
-from typing import Dict
 
 import pytest
 from fastapi.testclient import TestClient
@@ -12,25 +11,6 @@ from app.db.models.item import Item
 from app.db.models.user import User
 from app.services.item_service import create_item
 from app.services.user_service import create_user
-
-
-@pytest.fixture
-def auth_headers(test_user: User, client: TestClient) -> Dict[str, str]:
-    """Retorna headers de autenticação para testes."""
-    # Faz login para obter token
-    login_data = {
-        "username": test_user.email,
-        "password": "senha123"  # senha padrão do test_user
-    }
-
-    response = client.post(
-        f"{settings.API_V1_STR}/auth/token",
-        data=login_data
-    )
-    assert response.status_code == 200
-    token_data = response.json()
-
-    return {"Authorization": f"Bearer {token_data['access_token']}"}
 
 
 @pytest.fixture
@@ -50,7 +30,7 @@ def test_item(db_session: Session, test_user: User) -> Item:
     return item
 
 
-def test_create_item(client: TestClient, auth_headers: Dict[str, str]):
+def test_create_item(client: TestClient, auth_headers: dict[str, str]):
     """Testa a criação de um novo item."""
     item_data = {
         "title": "Novo Item",
@@ -89,7 +69,7 @@ def test_create_item_unauthorized(client: TestClient):
     assert response.status_code == 401
 
 
-def test_read_items(client: TestClient, test_item: Item, auth_headers: Dict[str, str]):
+def test_read_items(client: TestClient, test_item: Item, auth_headers: dict[str, str]):
     """Testa a listagem de items do usuário."""
     response = client.get(
         f"{settings.API_V1_STR}/items/",
@@ -106,7 +86,7 @@ def test_read_items(client: TestClient, test_item: Item, auth_headers: Dict[str,
     assert test_item.id in item_ids
 
 
-def test_read_item(client: TestClient, test_item: Item, auth_headers: Dict[str, str]):
+def test_read_item(client: TestClient, test_item: Item, auth_headers: dict[str, str]):
     """Testa a obtenção de um item específico."""
     response = client.get(
         f"{settings.API_V1_STR}/items/{test_item.id}",
@@ -121,7 +101,7 @@ def test_read_item(client: TestClient, test_item: Item, auth_headers: Dict[str, 
     assert data["price"] == test_item.price
 
 
-def test_read_item_not_found(client: TestClient, auth_headers: Dict[str, str]):
+def test_read_item_not_found(client: TestClient, auth_headers: dict[str, str]):
     """Testa a obtenção de um item inexistente."""
     response = client.get(
         f"{settings.API_V1_STR}/items/999999",
@@ -137,7 +117,7 @@ def test_read_item_unauthorized(client: TestClient, test_item: Item):
     assert response.status_code == 401
 
 
-def test_update_item(client: TestClient, test_item: Item, auth_headers: Dict[str, str]):
+def test_update_item(client: TestClient, test_item: Item, auth_headers: dict[str, str]):
     """Testa a atualização de um item."""
     update_data = {
         "title": "Item Atualizado",
@@ -159,7 +139,7 @@ def test_update_item(client: TestClient, test_item: Item, auth_headers: Dict[str
     assert data["id"] == test_item.id
 
 
-def test_update_item_not_found(client: TestClient, auth_headers: Dict[str, str]):
+def test_update_item_not_found(client: TestClient, auth_headers: dict[str, str]):
     """Testa a atualização de um item inexistente."""
     update_data = {
         "title": "Item Atualizado",
@@ -176,7 +156,7 @@ def test_update_item_not_found(client: TestClient, auth_headers: Dict[str, str])
     assert response.status_code == 404
 
 
-def test_delete_item(client: TestClient, test_item: Item, auth_headers: Dict[str, str]):
+def test_delete_item(client: TestClient, test_item: Item, auth_headers: dict[str, str]):
     """Testa a remoção de um item."""
     response = client.delete(
         f"{settings.API_V1_STR}/items/{test_item.id}",
@@ -193,7 +173,7 @@ def test_delete_item(client: TestClient, test_item: Item, auth_headers: Dict[str
     assert response.status_code == 404
 
 
-def test_delete_item_not_found(client: TestClient, auth_headers: Dict[str, str]):
+def test_delete_item_not_found(client: TestClient, auth_headers: dict[str, str]):
     """Testa a remoção de um item inexistente."""
     response = client.delete(
         f"{settings.API_V1_STR}/items/999999",
