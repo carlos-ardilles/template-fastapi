@@ -1,6 +1,7 @@
 """Modelo de banco de dados e schema para usuários usando SQLModel."""
 
 from typing import List, Optional, TYPE_CHECKING
+from pydantic import EmailStr
 from sqlmodel import Field, Relationship, SQLModel
 
 # Use TYPE_CHECKING para imports que são apenas para tipagem
@@ -10,7 +11,7 @@ if TYPE_CHECKING:
 
 class UserBase(SQLModel):
     """Schema base para usuários."""
-    email: str = Field(unique=True, index=True)
+    email: EmailStr = Field(unique=True, index=True)
     name: str
     is_active: bool = True
 
@@ -28,15 +29,15 @@ class User(UserBase, table=True):
 
 class UserCreate(UserBase):
     """Schema para criação de usuários."""
-    password: str
+    password: str = Field(min_length=8, max_length=128)
 
 
 class UserUpdate(SQLModel):
     """Schema para atualização de usuários."""
-    email: Optional[str] = None
+    email: Optional[EmailStr] = None
     name: Optional[str] = None
     is_active: Optional[bool] = None
-    password: Optional[str] = None
+    password: Optional[str] = Field(default=None, min_length=8, max_length=128)
 
 
 class UserRead(UserBase):

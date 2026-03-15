@@ -92,6 +92,19 @@ def client(app: FastAPI, db_session: Session) -> Generator[TestClient, Any, None
     app.dependency_overrides.clear()  # Limpar overrides
 
 
+
+
+@pytest.fixture
+def auth_headers(test_user: User, client: TestClient) -> dict[str, str]:
+    """Retorna headers de autenticação para o usuário de teste."""
+    response = client.post(
+        f"{settings.API_V1_STR}/auth/token",
+        data={"username": test_user.email, "password": "senha123"},
+    )
+    assert response.status_code == 200, response.text
+    token_data = response.json()
+    return {"Authorization": f"Bearer {token_data['access_token']}"}
+
 @pytest.fixture
 def user_create_data() -> dict:
     """Dados únicos para criação de usuário."""
